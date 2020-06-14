@@ -104,6 +104,7 @@
 #include <QzSimple2.h>
 #include <PyLiq1.h>
 #include <TzLiq1.h>
+#include <QzLiq1.h>
 
 #include <FedeasBond1Material.h>
 #include <FedeasBond2Material.h>
@@ -1141,7 +1142,7 @@ FEM_ObjectBrokerAllClasses::getNewUniaxialMaterial(int classTag)
 	case MAT_TAG_Fatigue:
 		return new FatigueMaterial();
 
-       case MAT_TAG_TzLiq1:
+   case MAT_TAG_TzLiq1:
 		return new TzLiq1();
 
 	case MAT_TAG_QzSimple1:
@@ -1149,6 +1150,9 @@ FEM_ObjectBrokerAllClasses::getNewUniaxialMaterial(int classTag)
 
 	case MAT_TAG_QzSimple2:
 		return new QzSimple2();
+
+   case MAT_TAG_QzLiq1:
+		return new QzLiq1();
 
 	case MAT_TAG_Hysteretic:
 		return new HystereticMaterial();

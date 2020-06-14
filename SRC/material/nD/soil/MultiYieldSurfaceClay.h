@@ -103,8 +103,9 @@ public:
      //void setCurrentStress(const Vector stress) { currentStress=T2Vector(stress); }
 //	 int updateParameter(int responseID, Information &eleInformation,int Yang);
 	
-	friend class PyLiq1;
+    friend class PyLiq1;
     friend class TzLiq1;
+    friend class QzLiq1; // Sumeet
 
 protected:
 
