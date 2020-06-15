@@ -60,8 +60,8 @@ void* QPS_QzLiq1()
 	return 0;
     }
 
-    double ddata[4];
-    numdata = 4;
+    double ddata[5];
+    numdata = 5;
     if (OPS_GetDoubleInput(&numdata, ddata) < 0) {
 	opserr << "WARNING invalid double inputs\n";
 	return 0;
@@ -79,7 +79,7 @@ void* QPS_QzLiq1()
 	    return 0;
 	}
 	TimeSeries* theSeries = OPS_getTimeSeries(tsTag);
-	theMat = new QzLiq1(idata[0], idata[1], ddata[0], ddata[1], ddata[2], ddata[3],
+	theMat = new QzLiq1(idata[0], idata[1], ddata[0], ddata[1], ddata[2], ddata[3], ddata[4],
 			    theDomain,theSeries);
 	
 				 
@@ -95,7 +95,7 @@ void* QPS_QzLiq1()
 	    return 0;
 	}
 
-	theMat = new QzLiq1(idata[0], idata[1], ddata[0], ddata[1], ddata[2], ddata[3],
+	theMat = new QzLiq1(idata[0], idata[1], ddata[0], ddata[1], ddata[2], ddata[3], ddata[4],
 			    eleTags[0],eleTags[1],theDomain);
     }
 
@@ -106,8 +106,8 @@ void* QPS_QzLiq1()
 //	Constructor with data
 
 QzLiq1::QzLiq1(int tag, int qz_type, double q_ult, double z_50, double suction,
-		double dash_pot, int solid_elem1, int solid_elem2, Domain *the_Domain)
-:QzSimple1(tag, qz_type, q_ult, z_50, suction, dash_pot),
+		double dash_pot, double alpha, int solid_elem1, int solid_elem2, Domain *the_Domain)
+:QzSimple1(tag, qz_type, q_ult, z_50, suction, dash_pot), alpha(alpha),
 solidElem1(solid_elem1), solidElem2(solid_elem2), theDomain(the_Domain)
 {
 	// Initialize QzSimple variables and history variables
@@ -117,8 +117,8 @@ solidElem1(solid_elem1), solidElem2(solid_elem2), theDomain(the_Domain)
 	QzConstructorType = 1;
 }
 QzLiq1::QzLiq1(int tag, int qz_type, double q_ult, double z_50, double suction,
-		double dash_pot, Domain *the_Domain, TimeSeries *the_Series)
-:QzSimple1(tag, qz_type, q_ult, z_50, suction, dash_pot),
+		double dash_pot, double alpha, Domain *the_Domain, TimeSeries *the_Series)
+:QzSimple1(tag, qz_type, q_ult, z_50, suction, dash_pot),alpha(alpha),
 theDomain(the_Domain), theSeries(the_Series)
 {
 	// Initialize QzSimple variables and history variables
@@ -205,7 +205,7 @@ QzLiq1::setTrialStrain (double newz, double zRate)
 	//
 	if (Tru < Cru){
 
-		maxTangent = (QzSimple1::Qult/QzSimple1::z50)*(1.0-Cru);
+		maxTangent = (QzSimple1::Qult/QzSimple1::z50)*pow(1.0-Cru,alpha);
 
 		//  If unloading, follow the old scaled q-z relation until t=0.
 		//
@@ -218,7 +218,7 @@ QzLiq1::setTrialStrain (double newz, double zRate)
 		
 		//  If above the stiff transition line (between Tru & Cru scaled surfaces)
 		//
-		double zref = Cz + baseT*(Cru-Tru)/maxTangent;
+		double zref = Cz + baseT*(-pow(1-Cru,alpha)+pow(1-Tru,alpha))/maxTangent;
 		if(Cz>0.0 && Tz>Cz && Tz<zref){
 			Hru = 1.0 - (Ct + (Tz-Cz)*maxTangent)/baseT;
 		}
@@ -230,9 +230,9 @@ QzLiq1::setTrialStrain (double newz, double zRate)
 	//  Now set the tangent and Tt values accordingly
 	//
 
-	Tt = baseT*(1.0-Hru);
+	Tt = baseT*pow(1.0-Hru,alpha);
 	if(Hru==Cru || Hru==Tru){
-		Tangent = (1.0-Hru)*baseTangent;
+		Tangent = pow(1.0-Hru,alpha)*baseTangent;
 	}
 	else {
 		Tangent = maxTangent;
@@ -248,7 +248,7 @@ QzLiq1::getStress(void)
 
 	// Limit the combined force to qult*(1-ru).
 	//
-	double tmax = (1.0-QZtolerance)*QzSimple1::Qult*(1.0-Hru);
+	double tmax = (1.0-QZtolerance)*QzSimple1::Qult*pow(1.0-Hru,alpha);
 	if(fabs(Tt + dashForce) >= tmax)
 		return tmax*(Tt+dashForce)/fabs(Tt+dashForce);
 	else return Tt + dashForce;
@@ -275,7 +275,7 @@ QzLiq1::getDampTangent(void)
 	//    and then scale by (1-ru).
 	//
 	double dampTangent = QzSimple1::getDampTangent();
-	return dampTangent*(1.0-Hru);
+	return dampTangent*pow(1.0-Hru,alpha);
 }
 /////////////////////////////////////////////////////////////////////
 double 
@@ -639,7 +639,7 @@ QzLiq1::sendSelf(int cTag, Channel &theChannel)
 	//
 	int res =0;
 
-	static Vector data(16);
+	static Vector data(17);
 
 	QzSimple1::sendSelf(cTag, theChannel);
 
@@ -653,20 +653,21 @@ QzLiq1::sendSelf(int cTag, Channel &theChannel)
 	data(7)  = Tru;
 	data(8)  = Cru;
 	data(9)  = Hru;
+	data(10)  = alpha;
 	if(QzConstructorType==2)
 	{
-		data(10) = theSeriesTag;
-		data(11) = 0.0;
+		data(11) = theSeriesTag;
+		data(12) = 0.0;
 	}
 	if(QzConstructorType==1)
 	{
-		data(10) = solidElem1;
-		data(11) = solidElem2;
+		data(11) = solidElem1;
+		data(12) = solidElem2;
 	}
-	data(12) = meanConsolStress;
-	data(13) = loadStage;
-	data(14) = lastLoadStage;
-	data(15) = initialTangent;
+	data(13) = meanConsolStress;
+	data(14) = loadStage;
+	data(15) = lastLoadStage;
+	data(16) = initialTangent;
 	
   res = theChannel.sendVector(this->getDbTag(), cTag, data);
   if (res < 0) 
@@ -682,7 +683,7 @@ QzLiq1::recvSelf(int cTag, Channel &theChannel,
 {
   int res = 0;
 
-  static Vector data(16);
+  static Vector data(17);
   res = theChannel.recvVector(this->getDbTag(), cTag, data);
   
   if (res < 0) {
@@ -703,19 +704,20 @@ QzLiq1::recvSelf(int cTag, Channel &theChannel,
 	Tru        = data(7);
 	Cru        = data(8);
 	Hru        = data(9);
+	alpha      = data(10);
 	if(QzConstructorType==1)
 	{
-		solidElem1        = (int)data(10);
-		solidElem2        = (int)data(11);
+		solidElem1        = (int)data(11);
+		solidElem2        = (int)data(12);
 	}
 	if(QzConstructorType==2)
 	{
-		theSeriesTag = (int)data(10);
+		theSeriesTag = (int)data(11);
 	}
-	meanConsolStress  = data(12);
-	loadStage         = (int)data(13);
-	lastLoadStage     = (int)data(14);
-	initialTangent    = data(15);
+	meanConsolStress  = data(13);
+	loadStage         = (int)data(14);
+	lastLoadStage     = (int)data(15);
+	initialTangent    = data(16);
 
 	// set the trial quantities
 	this->revertToLastCommit();

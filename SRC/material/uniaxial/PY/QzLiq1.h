@@ -38,9 +38,9 @@ class QzLiq1 : public QzSimple1
 {
   public:
     QzLiq1(int tag, int qzType, double tult, double z50, double suction,
-		      double dashpot, int solidElem1, int solidElem2, Domain *theDomain);
+		      double dashpot, double alpha, int solidElem1, int solidElem2, Domain *theDomain);
 	QzLiq1(int tag, int qzType, double tult, double z50, double suction, 
-			  double dashpot, Domain *theDomain, TimeSeries *theSeries);
+			  double dashpot, double alpha, Domain *theDomain, TimeSeries *theSeries);
     QzLiq1();
     ~QzLiq1();
 
@@ -85,6 +85,7 @@ class QzLiq1 : public QzSimple1
 	double Tru;
 	double Cru;
 	double Hru;
+	double alpha; // factor (1-ru)^alpha
 
 	// Solid element from which pore pressures are obtained, domain pointer
 	// and stage information to get the initial vertical effective stress.

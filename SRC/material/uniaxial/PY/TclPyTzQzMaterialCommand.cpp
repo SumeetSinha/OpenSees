@@ -316,7 +316,7 @@ TclModelBuilder_addPyTzQzMaterial(ClientData clientData, Tcl_Interp *interp, int
  	}
  
  	int tag, qzType, solidElem1, solidElem2, seriesTag;
- 	double qult, z50,  suction, dashpot;
+ 	double qult, z50,  suction, dashpot, alpha;
  
  	if (Tcl_GetInt(interp, argv[2], &tag) != TCL_OK) {
  	    opserr << "WARNING invalid uniaxialMaterial QzLiq1 tag" << endln;
@@ -352,28 +352,34 @@ TclModelBuilder_addPyTzQzMaterial(ClientData clientData, Tcl_Interp *interp, int
  	    opserr << "uniaxialMaterial QzLiq1: " << tag << endln;
  	    return 0;	
  	}
- 
-	if (strcmp(argv[8],"-timeSeries")!=0)
+
+ 	if (Tcl_GetDouble(interp, argv[8], &alpha) != TCL_OK) {
+ 	    opserr << "WARNING invalid alpha\n";
+ 	    opserr << "uniaxialMaterial QzLiq1: " << tag << endln;
+ 	    return 0;	
+ 	}
+
+	if (strcmp(argv[9],"-timeSeries")!=0)
 	{
- 		if (Tcl_GetInt(interp, argv[8], &solidElem1) != TCL_OK) {
+ 		if (Tcl_GetInt(interp, argv[9], &solidElem1) != TCL_OK) {
  			opserr << "WARNING invalid solidElem\n";
  			opserr << "uniaxialMaterial QzLiq1: " << tag << endln;
  			return 0;	
  		}
  	
- 		if (Tcl_GetInt(interp, argv[9], &solidElem2) != TCL_OK) {
+ 		if (Tcl_GetInt(interp, argv[10], &solidElem2) != TCL_OK) {
  			opserr << "WARNING invalid solidElem\n";
  			opserr << "uniaxialMaterial QzLiq1: " << tag << endln;
  			return 0;	
  		}
  
  		// Parsing was successful, allocate the material
- 		theMaterial = new QzLiq1(tag, qzType, qult, z50, suction, dashpot,
+ 		theMaterial = new QzLiq1(tag, qzType, qult, z50, suction, dashpot,alpha,
  								solidElem1, solidElem2, theDomain);
 	}
 	else
 	{
-		if (Tcl_GetInt(interp, argv[9], &seriesTag) != TCL_OK) {
+		if (Tcl_GetInt(interp, argv[10], &seriesTag) != TCL_OK) {
  			opserr << "WARNING time Series\n";
  			opserr << "uniaxialMaterial QzLiq1: " << tag << endln;
 			return 0;
@@ -382,7 +388,7 @@ TclModelBuilder_addPyTzQzMaterial(ClientData clientData, Tcl_Interp *interp, int
 		theSeries = OPS_getTimeSeries(seriesTag);
  
  		// Parsing was successful, allocate the material
- 		theMaterial = new QzLiq1(tag, qzType, qult, z50, suction, dashpot,
+ 		theMaterial = new QzLiq1(tag, qzType, qult, z50, suction, dashpot,alpha,
  								theDomain, theSeries);
 	}
 
