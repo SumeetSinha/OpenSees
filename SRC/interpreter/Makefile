@@ -1,7 +1,8 @@
 
 include ../../Makefile.def
 
-OBJS  = DL_Interpreter.o OpenSeesCommands.o OpenSeesUniaxialMaterialCommands.o OpenSeesElementCommands.o OpenSeesTimeSeriesCommands.o OpenSeesPatternCommands.o OpenSeesSectionCommands.o OpenSeesOutputCommands.o OpenSeesCrdTransfCommands.o OpenSeesBeamIntegrationCommands.o OpenSeesNDMaterialCommands.o OpenSeesMiscCommands.o OpenSeesParameterCommands.o OpenSeesFrictionModelCommands.o OpenSeesReliabilityCommands.o
+OBJS  = DL_Interpreter.o OpenSeesCommands.o OpenSeesUniaxialMaterialCommands.o OpenSeesElementCommands.o OpenSeesTimeSeriesCommands.o OpenSeesPatternCommands.o OpenSeesSectionCommands.o OpenSeesOutputCommands.o OpenSeesCrdTransfCommands.o OpenSeesBeamIntegrationCommands.o OpenSeesNDMaterialCommands.o OpenSeesMiscCommands.o OpenSeesParameterCommands.o OpenSeesFrictionModelCommands.o
+#  OpenSeesReliabilityCommands.o
 
 TclOBJS =  tclMain.o TclInterpreter.o TclWrapper.o $(OBJS)
 PythonOBJS = pythonMain.o PythonModule.o PythonWrapper.o $(OBJS)
@@ -22,7 +23,7 @@ tcl: $(TclOBJS)
 
 python:  $(PythonOBJS)
 	$(RM) $(RMFLAGS) openseespy;
-	$(LINKER) $(LINKFLAGS) -Wl,-rpath,\$$ORIGIN/lib $(PythonOBJS) \
+	$(LINKER) $(LINKFLAGS) -Wl,--no-undefined,-rpath,\$$ORIGIN/lib $(PythonOBJS) \
 	$(FE_LIBRARY) $(MACHINE_LINKLIBS) $(PYTHON_LIBRARY) \
 	$(MACHINE_NUMERICAL_LIBS) $(MACHINE_SPECIFIC_LIBS) $(PARALLEL_LIB) \
 	$(INTERPRETER_LIBS_MPI_PARAMETERS) \
@@ -34,7 +35,7 @@ OBJSm = OpenSeesCommandsPython.o OpenSeesUniaxialMaterialCommands.o PythonModelB
 
 pythonmodule: $(PythonModuleOBJS)
 	$(RM) $(RMFLAGS) opensees.so;
-	$(LINKER) $(LINKFLAGS) -Wl,-rpath,\$$ORIGIN/lib -shared $(PythonModuleOBJS) \
+	$(LINKER) $(LINKFLAGS) -Wl,--no-undefined,-rpath,\$$ORIGIN/lib -shared $(PythonModuleOBJS) \
 	$(INTERPRETER_LIBS_MPI_PARAMETERS) \
 	$(FE_LIBRARY) $(MACHINE_LINKLIBS) $(PYTHON_LIBRARY) \
 	$(MACHINE_NUMERICAL_LIBS) $(MACHINE_SPECIFIC_LIBS) $(PARALLEL_LIB) \

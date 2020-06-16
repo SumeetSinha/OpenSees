@@ -172,12 +172,12 @@ OpenSeesCommands::OpenSeesCommands(DL_Interpreter* interp)
 
     theDomain = new Domain;
 
-    reliability = new OpenSeesReliabilityCommands(theDomain);
+    // reliability = new OpenSeesReliabilityCommands(theDomain);
 }
 
 OpenSeesCommands::~OpenSeesCommands()
 {
-    if (reliability != 0) delete reliability;
+    // if (reliability != 0) delete reliability;
     if (theDomain != 0) delete theDomain;
     if (theDatabase != 0) delete theDatabase;
     cmds = 0;
@@ -913,12 +913,12 @@ OpenSeesCommands::wipe()
     // wipe CyclicModel
     OPS_clearAllCyclicModel();
 
-    if (reliability != 0) {
-      ReliabilityDomain* theReliabilityDomain = reliability->getDomain();
-      if (theReliabilityDomain != 0) {
-	//theReliabilityDomain->clearAll();
-      }
-    }
+ //    if (reliability != 0) {
+ //      ReliabilityDomain* theReliabilityDomain = reliability->getDomain();
+ //      if (theReliabilityDomain != 0) {
+	// //theReliabilityDomain->clearAll();
+ //      }
+ //    }
 }
 
 void
