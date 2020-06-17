@@ -217,14 +217,17 @@ QzLiq1::setTrialStrain (double newz, double zRate)
 		}
 		
 		//  If above the stiff transition line (between Tru & Cru scaled surfaces)
-		//
-		double zref = Cz + baseT*(-pow(1-Cru,alpha)+pow(1-Tru,alpha))/maxTangent;
+		
+		double zref = Cz + baseT*(Cru-Hru)/maxTangent;
 		if(Cz>0.0 && Tz>Cz && Tz<zref){
 			Hru = 1.0 - (Ct + (Tz-Cz)*maxTangent)/baseT;
 		}
 		if(Cz<0.0 && Tz<Cz && Tz>zref){
 			Hru = 1.0 - (Ct + (Tz-Cz)*maxTangent)/baseT;
 		}
+
+		if(Hru > Cru) Hru = Cru;
+		if(Hru < Tru) Hru = Tru;
 	}
 
 	//  Now set the tangent and Tt values accordingly

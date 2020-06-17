@@ -76,15 +76,15 @@ class QzLiq1 : public QzSimple1
   private:
 
 	// Committed and trial values for q, z, and ru
-	double Tz;
-	double Cz;
-	double Tt;
-	double Ct;
-	double Tangent;
-	double maxTangent;
-	double Tru;
-	double Cru;
-	double Hru;
+	double Tz; // Trial z (displacement)
+	double Cz; // Commit z (displacement)
+	double Tt; // Trial load
+	double Ct; // Commit load
+	double Tangent; // Tangent
+	double maxTangent; // maximum tangent
+	double Tru; // Trial ru
+	double Cru; // Commit ru
+	double Hru; // 
 	double alpha; // factor (1-ru)^alpha
 
 	// Solid element from which pore pressures are obtained, domain pointer
