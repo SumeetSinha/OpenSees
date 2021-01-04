@@ -84,6 +84,7 @@ class InitialStateAnalysisWrapper : public NDMaterial
 	
 	friend class PyLiq1;
 	friend class TzLiq1;
+	friend class QzLiq1;
 
 	int getMainClassTag();           // sends class tag of main material object
 	

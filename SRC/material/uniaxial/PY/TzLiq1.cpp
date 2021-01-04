@@ -226,13 +226,10 @@ TzLiq1::setTrialStrain (double newz, double zRate)
 		if(Cz<0.0 && Tz<Cz && Tz>zref){
 			Hru = 1.0 - (Ct + (Tz-Cz)*maxTangent)/baseT;
 		}
-
-		if(Hru > Cru) Hru = Cru;
-		if(Hru < Tru) Hru = Tru;
 	}
 
-	//  Now set the tangent and Tt values accordingly
-	//
+	 // Now set the tangent and Tt values accordingly
+	
 
 	Tt = baseT*(1.0-Hru);
 	if(Hru==Cru || Hru==Tru){

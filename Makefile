@@ -54,7 +54,10 @@ endif
 	done );
 	@$(ECHO) LIBRARIES BUILT ... NOW LINKING OpenSees PROGRAM;
 	@$(CD) $(FE)/tcl; $(MAKE) tcl;
-	@$(CD) $(FE)/modelbuilder/tcl;  $(MAKE) tcl;
+	@$(CD) $(FE)/modelbuilder/tcl;  $(MAKE) tcl; $(MAKE) OpenSeesPy;
+	sudo ln -sf $(FE)/interpreter/opensees.so /usr/local/lib/opensees.so
+	sudo ln -sf $(FE)/interpreter/opensees.so /usr/local/bin/opensees.so
+	sudo ln -sf $(HOME)/bin/OpenSees /usr/local/bin/OpenSees
 
 OpenSees: tcl
 
