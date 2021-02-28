@@ -183,8 +183,11 @@ QzLiq1::setTrialStrain (double newz, double zRate)
 			meanStress = getEffectiveStress(theSeries);
 		else
 			meanStress = getEffectiveStress();
+		if(meanStress>meanConsolStress)
+			meanStress=meanConsolStress;
 		Tru = 1.0 - meanStress/meanConsolStress;
 		if(Tru > 0.999) Tru = 0.999;
+		if(Tru < 0) Tru = 0;
 	}
 	else {
 		Tru = 0.0;
@@ -218,12 +221,13 @@ QzLiq1::setTrialStrain (double newz, double zRate)
 		
 		//  If above the stiff transition line (between Tru & Cru scaled surfaces)
 		
-		double zref = Cz + baseT*(Cru-Hru)/maxTangent;
+		// double zref = Cz + baseT*(Cru-Hru)/maxTangent;
+		double zref = Cz + baseT*(pow(1-Hru,alpha)-pow(1-Cru,alpha))/maxTangent;
 		if(Cz>0.0 && Tz>Cz && Tz<zref){
-			Hru = 1.0 - (Ct + (Tz-Cz)*maxTangent)/baseT;
+			Hru = 1.0 - pow((Ct + (Tz-Cz)*maxTangent)/baseT,1.0/alpha);
 		}
 		if(Cz<0.0 && Tz<Cz && Tz>zref){
-			Hru = 1.0 - (Ct + (Tz-Cz)*maxTangent)/baseT;
+			Hru = 1.0 - pow((Ct + (Tz-Cz)*maxTangent)/baseT,1.0/alpha);
 		}
 
 		if(Hru > Cru) Hru = Cru;

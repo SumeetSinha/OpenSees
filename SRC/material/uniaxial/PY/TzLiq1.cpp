@@ -184,8 +184,11 @@ TzLiq1::setTrialStrain (double newz, double zRate)
 			meanStress = getEffectiveStress(theSeries);
 		else
 			meanStress = getEffectiveStress();
+		if(meanStress>meanConsolStress)
+			meanStress=meanConsolStress;
 		Tru = 1.0 - meanStress/meanConsolStress;
 		if(Tru > 0.999) Tru = 0.999;
+		if(Tru < 0) Tru = 0;
 	}
 	else {
 		Tru = 0.0;

@@ -374,6 +374,7 @@ void QzSimple1::getNearField(double zlast, double dz, double dz_old)
 int 
 QzSimple1::setTrialStrain (double newz, double zRate)
 {
+
 	// Set trial values for displacement and load in the material
 	// based on the last Tangent modulus.
 	//
